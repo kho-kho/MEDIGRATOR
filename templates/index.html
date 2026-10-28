@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDIGRATOR: AI-Driven Medical Waste Detection &amp; Intelligent Segregation</title>
+    <!-- Tailwind CSS CDN configured for dark mode class -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Design System Stylesheet (Cache-Busted v7.0) -->
+    <link rel="stylesheet" href="/static/css/style.css?v=7.0">
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-teal-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar sticky top-0 z-50">
+        <div class="app-container h-14 flex items-center justify-between gap-3">
+            
+            <!-- Brand & Subtitle -->
+            <div class="flex items-center space-x-3 flex-shrink-0">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-surface); border: 1px solid var(--accent-border);">
+                    <i data-lucide="shield-check" class="w-4 h-4" style="color: var(--accent);"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-base sm:text-lg font-bold tracking-tight text-primary-heading">MEDIGRATOR</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase" style="background-color: var(--accent-surface); border: 1px solid var(--accent-border); color: var(--accent);">AI Studio</span>
+                    </div>
+                    <p class="text-[11px] text-secondary-label hidden md:block">AI-Driven Medical Waste Detection &amp; Intelligent Segregation</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-1 text-xs">
+                <button onclick="switchTab('studio')" id="tab-btn-studio" class="nav-tab active">
+                    <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+                    <span>Detection Studio</span>
+                </button>
+                <button onclick="switchTab('guidelines')" id="tab-btn-guidelines" class="nav-tab">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    <span>Segregation Rules</span>
+                </button>
+                <button onclick="switchTab('specs')" id="tab-btn-specs" class="nav-tab">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                    <span>Technology &amp; Dataset</span>
+                </button>
+            </nav>
+
+            <!-- Header Controls: Theme Toggle & Status -->
+            <div class="flex items-center space-x-2.5 flex-shrink-0">
+                
+                <!-- Sliding Light/Dark Mode Toggle -->
+                <div class="theme-toggle-container">
+                    <span id="theme-label" class="theme-toggle-label">Dark Mode</span>
+                    <button id="theme-toggle-btn"
+                            type="button"
+                            role="switch"
+                            aria-checked="true"
+                            aria-label="Toggle dark and light theme"
+                            class="theme-toggle-track">
+                        <span id="theme-toggle-knob" class="theme-toggle-knob">
+                            <i id="theme-icon" data-lucide="moon" class="w-2.5 h-2.5 text-slate-800"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- System Hardware Status Pill -->
+                <div id="system-status-badge" class="system-status-pill hidden xl:inline-flex">
+                    <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                    <span id="system-status-text">MEDIGRATOR Detection System Ready</span>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-1.5 rounded-lg inner-box text-secondary-label" aria-label="Toggle navigation menu">
+                    <i data-lucide="menu" class="w-4 h-4"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Mobile Collapsible Menu -->
+        <div id="mobile-menu-dropdown" class="hidden md:hidden px-4 pt-2 pb-3 space-y-1 border-t border-divider" style="background-color: var(--bg-card);">
+            <button onclick="switchTab('studio'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 text-primary-heading hover:bg-slate-800/20">
+                <i data-lucide="scan" class="w-4 h-4" style="color: var(--accent);"></i>
+                <span>Detection Studio</span>
+            </button>
+            <button onclick="switchTab('guidelines'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 text-primary-heading hover:bg-slate-800/20">
+                <i data-lucide="book-open" class="w-4 h-4" style="color: var(--accent);"></i>
+                <span>Segregation Rules</span>
+            </button>
+            <button onclick="switchTab('specs'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 text-primary-heading hover:bg-slate-800/20">
+                <i data-lucide="layers" class="w-4 h-4" style="color: var(--accent);"></i>
+                <span>Technology &amp; Dataset</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Runtime Alert Banner (If environment needs setup) -->
+    <div id="env-alert-banner" class="hidden border-b px-4 py-2 text-xs" style="background-color: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3); color: #d97706;">
+        <div class="app-container flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
+                <span id="env-alert-message">System Notice: Verifying dependencies...</span>
+            </div>
+            <button onclick="document.getElementById('env-alert-banner').classList.add('hidden')">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Workspace Container -->
+    <main class="app-container flex-1 py-5">
+
+        <!-- ================================================================== -->
+        <!-- TAB 1: DETECTION STUDIO                                            -->
+        <!-- ================================================================== -->
+        <section id="tab-studio" class="space-y-5">
+            
+            <!-- Page Header: Balanced Introduction -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-4 border-b border-divider">
+                <div>
+                    <h1 class="text-2xl sm:text-[28px] font-bold text-primary-heading tracking-tight leading-snug">
+                        MEDIGRATOR Detection Studio
+                    </h1>
+                    <p class="text-xs sm:text-sm text-secondary-label font-medium mt-0.5">
+                        AI-driven identification of medical waste with intelligent segregation guidance.
+                    </p>
+                    <p class="text-[11px] sm:text-xs text-muted-desc mt-1">
+                        Real-time computer vision identification across 14 clinical categories with automated disposal protocol mapping adhering to WHO and CPCB rules.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 self-start md:self-center flex-shrink-0">
+                    <button id="open-webcam-btn" class="btn-secondary-action px-3.5 py-2 text-xs flex items-center space-x-1.5 shadow-sm">
+                        <i data-lucide="camera" class="w-3.5 h-3.5" style="color: var(--accent);"></i>
+                        <span>Live Webcam</span>
+                    </button>
+                    <button id="reset-all-btn" class="btn-secondary-action px-3.5 py-2 text-xs flex items-center space-x-1.5 shadow-sm">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Balanced Two-Column Workspace (40% Left / 60% Right) -->
+            <div class="workspace-grid">
+
+                <!-- LEFT COLUMN: Image Input & Detection Settings (40%) -->
+                <div class="space-y-4">
+                    
+                    <!-- Upload Card -->
+                    <div class="card-panel p-4 sm:p-5 space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs sm:text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                                <i data-lucide="upload-cloud" class="w-4 h-4" style="color: var(--accent);"></i>
+                                <span>Input Waste Image</span>
+                            </span>
+                            <span class="text-[11px] text-muted-desc">Max 32MB</span>
+                        </div>
+
+                        <!-- Restrained Dropzone -->
+                        <div id="drop-zone" class="drop-zone-box p-5 text-center cursor-pointer relative group">
+                            <input type="file" id="file-input" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            
+                            <div id="dropzone-prompt" class="space-y-2">
+                                <div class="w-10 h-10 mx-auto rounded-full inner-box flex items-center justify-center text-secondary-label group-hover:text-teal-500 transition">
+                                    <i data-lucide="image-plus" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-primary-heading">Click to browse or drop an image</p>
+                                    <p class="text-[11px] text-muted-desc mt-0.5">Supports JPG, PNG, WEBP, BMP</p>
+                                </div>
+                            </div>
+
+                            <!-- Preview Thumbnail (When loaded) -->
+                            <div id="dropzone-preview" class="hidden relative">
+                                <img id="preview-img" src="" alt="Selected image" class="max-h-44 mx-auto rounded-md object-contain">
+                                <div class="mt-2 flex items-center justify-center space-x-2">
+                                    <span id="preview-filename" class="text-xs text-muted-desc truncate max-w-[200px]">image.jpg</span>
+                                    <button type="button" id="clear-image-btn" class="text-xs font-semibold text-rose-500 hover:text-rose-400 underline z-20">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Test Sample Images -->
+                        <div class="pt-3 border-t border-divider">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[11px] font-semibold text-secondary-label uppercase tracking-wider">Quick Test Samples</span>
+                                <span class="text-[10px] text-muted-desc">Click to load</span>
+                            </div>
+                            <div id="samples-container" class="grid grid-cols-3 gap-2">
+                                <!-- Populated dynamically by JS -->
+                                <div class="col-span-3 text-center py-2 text-xs text-muted-desc">Loading demo samples...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detection Settings Card -->
+                    <div class="card-panel p-4 sm:p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs sm:text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                                <i data-lucide="sliders" class="w-4 h-4" style="color: var(--accent);"></i>
+                                <span>Detection Settings</span>
+                            </span>
+                            <span class="text-[11px] text-muted-desc">Sensitivity Thresholds</span>
+                        </div>
+
+                        <!-- Confidence Slider -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-secondary-label font-medium">Confidence Threshold</span>
+                                <span id="conf-val" class="font-mono font-semibold" style="color: var(--accent);">25% (0.25)</span>
+                            </div>
+                            <input type="range" id="conf-slider" min="5" max="95" value="25" class="slider-control">
+                            <div class="flex justify-between text-[10px] text-muted-desc">
+                                <span>5% (High Recall)</span>
+                                <span>50%</span>
+                                <span>95% (High Precision)</span>
+                            </div>
+                        </div>
+
+                        <!-- IoU Overlap Slider -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-secondary-label font-medium">IoU Overlap Threshold</span>
+                                <span id="iou-val" class="font-mono font-semibold" style="color: var(--accent);">45% (0.45)</span>
+                            </div>
+                            <input type="range" id="iou-slider" min="10" max="90" value="45" class="slider-control">
+                            <div class="flex justify-between text-[10px] text-muted-desc">
+                                <span>10% (Strict)</span>
+                                <span>45% (Default)</span>
+                                <span>90% (Relaxed)</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button id="analyze-btn" disabled class="btn-primary-action w-full py-2.5 px-4 text-xs sm:text-sm font-semibold flex items-center justify-center space-x-2 shadow-sm">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                            <span id="analyze-btn-text">Classify &amp; Segregate Waste</span>
+                            <div id="analyze-spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN: Detection Results & Segregation Advisory (60%) -->
+                <div class="space-y-4">
+
+                    <!-- Empty State Placeholder (Before inference) -->
+                    <div id="results-placeholder" class="card-panel p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[440px]">
+                        <div class="w-12 h-12 rounded-xl inner-box flex items-center justify-center mb-3">
+                            <i data-lucide="scan-line" class="w-6 h-6" style="color: var(--accent);"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-primary-heading">Ready for Detection</h3>
+                        <p class="text-xs sm:text-sm text-secondary-label max-w-sm mt-1 mb-5">
+                            Upload an image, capture with the live webcam, or pick a sample on the left to run detection and view segregation guidance.
+                        </p>
+                        <div class="inline-flex items-center space-x-2 text-[11px] inner-box px-3.5 py-1.5 rounded-full text-secondary-label">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5" style="color: var(--accent);"></i>
+                            <span>14 Clinical Waste Categories Supported</span>
+                        </div>
+                    </div>
+
+                    <!-- Active Results Container (After inference) -->
+                    <div id="results-container" class="hidden space-y-4">
+
+                        <!-- Detection Results & Visualization Card -->
+                        <div class="card-panel p-4 sm:p-5 space-y-3.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                                    <span class="text-xs sm:text-sm font-semibold text-primary-heading">Detection Results &amp; Localization</span>
+                                </div>
+                                <!-- Toggle View Switch -->
+                                <div class="inner-box p-0.5 rounded-lg flex space-x-1 text-xs">
+                                    <button id="toggle-annotated-btn" class="px-2.5 py-1 rounded-md font-semibold text-[11px] transition" style="background-color: var(--accent-surface); color: var(--accent-text);">
+                                        Annotated Bounding Boxes
+                                    </button>
+                                    <button id="toggle-original-btn" class="px-2.5 py-1 rounded-md font-medium text-[11px] text-secondary-label transition">
+                                        Original Photo
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Main Visual Display Canvas / Image -->
+                            <div class="relative inner-box rounded-lg overflow-hidden min-h-[280px] max-h-[420px] flex items-center justify-center">
+                                <img id="res-image-annotated" src="" alt="Annotated Detection" class="max-h-[400px] w-full object-contain">
+                                <img id="res-image-original" src="" alt="Original Photo" class="hidden max-h-[400px] w-full object-contain">
+                            </div>
+
+                            <!-- KPI Summary Stat Badges -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                                <div class="inner-box p-2.5 rounded-lg text-center">
+                                    <p class="text-[10px] sm:text-[11px] text-muted-desc">Objects Detected</p>
+                                    <p id="stat-total-items" class="text-lg font-bold text-primary-heading mt-0.5">0</p>
+                                </div>
+                                <div class="inner-box p-2.5 rounded-lg text-center">
+                                    <p class="text-[10px] sm:text-[11px] text-muted-desc">Primary Stream</p>
+                                    <p id="stat-primary-stream" class="text-xs font-semibold text-amber-500 truncate mt-1">Yellow Bin</p>
+                                </div>
+                                <div class="inner-box p-2.5 rounded-lg text-center">
+                                    <p class="text-[10px] sm:text-[11px] text-muted-desc">Top Confidence</p>
+                                    <p id="stat-max-conf" class="text-lg font-bold text-primary-heading mt-0.5" style="color: var(--accent);">0%</p>
+                                </div>
+                                <div class="inner-box p-2.5 rounded-lg text-center">
+                                    <p class="text-[10px] sm:text-[11px] text-muted-desc">Detection Latency</p>
+                                    <p id="stat-latency" class="text-lg font-bold text-primary-heading mt-0.5">0ms</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detected Waste Breakdown List -->
+                        <div class="card-panel p-4 sm:p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs sm:text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                                    <i data-lucide="list-checks" class="w-4 h-4" style="color: var(--accent);"></i>
+                                    <span>Classified Waste Breakdown</span>
+                                </h3>
+                                <span id="stat-hazard-badge" class="text-[11px] px-2 py-0.5 rounded font-semibold border">
+                                    Hazard: High
+                                </span>
+                            </div>
+                            <!-- Items List -->
+                            <div id="detections-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Intelligent Segregation & Handling Advisory -->
+                        <div class="card-panel p-4 sm:p-5 space-y-3.5">
+                            <div class="border-b border-divider pb-2.5">
+                                <h3 class="text-xs sm:text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                                    <i data-lucide="recycle" class="w-4 h-4 text-amber-500"></i>
+                                    <span>Automated Segregation Protocol</span>
+                                </h3>
+                                <p class="text-[11px] text-muted-desc mt-0.5">Directives based on Central Pollution Control Board (CPCB) Medical Waste Rules</p>
+                            </div>
+
+                            <!-- Target Bins Required Container -->
+                            <div id="required-bins-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <!-- Specific Handling Protocols Checklist -->
+                            <div class="inner-box rounded-lg p-3.5 space-y-2">
+                                <h4 class="text-[11px] font-semibold uppercase tracking-wider text-muted-desc flex items-center space-x-1.5">
+                                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5" style="color: var(--accent);"></i>
+                                    <span>Clinical Action Checklist</span>
+                                </h4>
+                                <ul id="action-checklist" class="space-y-1.5 text-xs text-secondary-label">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================================================================== -->
+        <!-- TAB 2: SEGREGATION RULES DIRECTORY                                 -->
+        <!-- ================================================================== -->
+        <section id="tab-guidelines" class="hidden space-y-5">
+            <div class="pb-3 border-b border-divider">
+                <h2 class="text-xl sm:text-2xl font-bold text-primary-heading tracking-tight">Medical Waste Segregation Directory</h2>
+                <p class="text-xs sm:text-sm text-secondary-label mt-0.5">Standardized color-coded disposal containers and treatment guidelines according to WHO and CPCB rules.</p>
+            </div>
+
+            <!-- 5 Bin Color Reference Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
+                <!-- Yellow Bin -->
+                <div class="bin-rule-card p-4 sm:p-5 space-y-2.5" style="border-left-color: #f59e0b;">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">🟡 Yellow Bin</span>
+                        <span class="text-[11px] text-muted-desc">Infectious / Soiled</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-primary-heading">Anatomical, Soiled &amp; Fabric Waste</h3>
+                    <p class="text-xs text-secondary-label leading-relaxed">Dressings, swabs, gauze soaked with blood or body fluids, soiled plaster casts, infectious masks, and surgical gowns.</p>
+                    <div class="inner-box text-xs p-2.5 rounded-md text-secondary-label">
+                        <strong class="text-amber-500">Treatment:</strong> High-temperature Incineration (&gt;1050&deg;C) or Plasma Pyrolysis.
+                    </div>
+                </div>
+
+                <!-- Red Bin -->
+                <div class="bin-rule-card p-4 sm:p-5 space-y-2.5" style="border-left-color: #ef4444;">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">🔴 Red Bin</span>
+                        <span class="text-[11px] text-muted-desc">Recyclable Plastic</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-primary-heading">Contaminated Recyclable Plastics</h3>
+                    <p class="text-xs text-secondary-label leading-relaxed">Examination gloves, IV bottles, catheters, plastic tubing, plastic syringe barrels (without needles), urine bags.</p>
+                    <div class="inner-box text-xs p-2.5 rounded-md text-secondary-label">
+                        <strong class="text-red-500">Treatment:</strong> Autoclaving / Microwaving followed by mechanical shredding and plastic recycling.
+                    </div>
+                </div>
+
+                <!-- White Sharps -->
+                <div class="bin-rule-card p-4 sm:p-5 space-y-2.5" style="border-left-color: #94a3b8;">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20">⚪ White Box</span>
+                        <span class="text-[11px] text-muted-desc">Sharps (Puncture-Proof)</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-primary-heading">Metallic &amp; Puncture Sharps</h3>
+                    <p class="text-xs text-secondary-label leading-relaxed">Hypodermic injection needles, syringes with fixed needles, scalpels, surgical blades, lumbar puncture needles.</p>
+                    <div class="inner-box text-xs p-2.5 rounded-md text-secondary-label">
+                        <strong class="text-slate-400">Treatment:</strong> Autoclaving / Dry Heat Sterilization followed by sharp-pit encapsulation.
+                    </div>
+                </div>
+
+                <!-- Blue Bin -->
+                <div class="bin-rule-card p-4 sm:p-5 space-y-2.5" style="border-left-color: #3b82f6;">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">🔵 Blue Bin / Box</span>
+                        <span class="text-[11px] text-muted-desc">Glassware</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-primary-heading">Medicine Vials &amp; Glass Articles</h3>
+                    <p class="text-xs text-secondary-label leading-relaxed">Glass ampoules, vacutainers, broken glass bottles, contaminated glass slides, metallic orthopedic implants.</p>
+                    <div class="inner-box text-xs p-2.5 rounded-md text-secondary-label">
+                        <strong class="text-blue-500">Treatment:</strong> Chemical disinfection (1-2% Sodium Hypochlorite) or autoclaving followed by glass recycling.
+                    </div>
+                </div>
+
+                <!-- Black / Green Bin -->
+                <div class="bin-rule-card p-4 sm:p-5 space-y-2.5" style="border-left-color: #64748b;">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20">⚫ Black / Green</span>
+                        <span class="text-[11px] text-muted-desc">General Municipal</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-primary-heading">Non-Hazardous Solid Waste</h3>
+                    <p class="text-xs text-secondary-label leading-relaxed">Office paper, packaging wrappers, non-infected sterile item packaging, cafeteria food waste.</p>
+                    <div class="inner-box text-xs p-2.5 rounded-md text-secondary-label">
+                        <strong class="text-slate-400">Treatment:</strong> Standard municipal waste recycling or sanitary landfill.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 14 Classes Detailed Table -->
+            <div class="card-panel p-4 sm:p-5 overflow-x-auto">
+                <h3 class="text-sm font-semibold text-primary-heading mb-3">Categorized Waste Directory (14 Clinical Targets)</h3>
+                <table class="w-full text-left text-xs text-secondary-label">
+                    <thead class="uppercase font-semibold border-b border-divider" style="background-color: var(--bg-secondary); color: var(--text-secondary);">
+                        <tr>
+                            <th class="py-2.5 px-3">Class Target</th>
+                            <th class="py-2.5 px-3">Item Type</th>
+                            <th class="py-2.5 px-3">Assigned Bin</th>
+                            <th class="py-2.5 px-3">Hazard Level</th>
+                            <th class="py-2.5 px-3">Disposal &amp; Treatment Protocol</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classes-table-body" class="divide-y border-divider">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- ================================================================== -->
+        <!-- TAB 3: TECHNOLOGY & DATASET SPECS                                  -->
+        <!-- ================================================================== -->
+        <section id="tab-specs" class="hidden space-y-5">
+            <div class="pb-3 border-b border-divider">
+                <h2 class="text-xl sm:text-2xl font-bold text-primary-heading tracking-tight">Technology Architecture &amp; Dataset Specifications</h2>
+                <p class="text-xs sm:text-sm text-secondary-label mt-0.5">MEDIGRATOR detection system architecture, training parameters, and dataset breakdown for project demonstration.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Architecture Card -->
+                <div class="card-panel p-5 sm:p-6 space-y-3.5">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-surface); border: 1px solid var(--accent-border);">
+                            <i data-lucide="cpu" class="w-4 h-4" style="color: var(--accent);"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-primary-heading">MEDIGRATOR Detection System</h3>
+                            <p class="text-[11px] text-muted-desc">Ultralytics YOLO11n Real-Time Detector</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-secondary-label">
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Weights Checkpoint</span>
+                            <span class="font-mono font-semibold" style="color: var(--accent);">models/best.pt (5.48 MB)</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Input Image Resolution</span>
+                            <span class="font-mono text-primary-heading font-medium">640 x 640 pixels</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Inference Latency</span>
+                            <span class="font-mono text-primary-heading font-medium">~15ms (GPU) / ~60ms (CPU)</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Class Categories</span>
+                            <span class="font-mono text-primary-heading font-medium">14 Categories</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Deep Learning Framework</span>
+                            <span class="font-mono text-primary-heading font-medium">PyTorch + Ultralytics YOLOv11</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Dataset Card -->
+                <div class="card-panel p-5 sm:p-6 space-y-3.5">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-surface); border: 1px solid var(--accent-border);">
+                            <i data-lucide="database" class="w-4 h-4" style="color: var(--accent);"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-primary-heading">Dataset (Roboflow Universe v3)</h3>
+                            <p class="text-[11px] text-muted-desc">Clinical Medical Waste Dataset</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-secondary-label">
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Total Annotated Images</span>
+                            <span class="font-mono text-primary-heading font-semibold">5,319 Images</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Train Split</span>
+                            <span class="font-mono text-primary-heading font-medium">4,569 images</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Validation Split</span>
+                            <span class="font-mono text-primary-heading font-medium">463 images</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">Test Split</span>
+                            <span class="font-mono text-primary-heading font-medium">287 images</span>
+                        </li>
+                        <li class="flex justify-between py-1 border-b border-divider">
+                            <span class="text-muted-desc">License</span>
+                            <span class="font-mono text-secondary-label">CC BY 4.0</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- College Project Demonstration Highlights -->
+            <div class="card-panel p-5 sm:p-6 space-y-3">
+                <h3 class="text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                    <i data-lucide="award" class="w-4 h-4 text-amber-500"></i>
+                    <span>College Project Demonstration Highlights</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-secondary-label pt-1">
+                    <div class="inner-box p-3.5 rounded-lg space-y-1">
+                        <strong class="text-xs font-semibold block text-primary-heading" style="color: var(--accent);">1. Real-Time Vision Detection</strong>
+                        <p class="leading-relaxed">Evaluates complex surgical scenes with simultaneous multi-item bounding box localization and confidence estimation.</p>
+                    </div>
+                    <div class="inner-box p-3.5 rounded-lg space-y-1">
+                        <strong class="text-xs font-semibold block text-primary-heading" style="color: var(--accent);">2. Regulatory Compliance</strong>
+                        <p class="leading-relaxed">Translates deep learning vision outputs directly into statutory CPCB / WHO clinical waste segregation protocols.</p>
+                    </div>
+                    <div class="inner-box p-3.5 rounded-lg space-y-1">
+                        <strong class="text-xs font-semibold block text-primary-heading" style="color: var(--accent);">3. Safety Optimization</strong>
+                        <p class="leading-relaxed">Prioritizes high-risk sharps and bloodborne pathogen hazards, instructing personnel on puncture-proof handling.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Webcam Live Capture Modal -->
+    <div id="webcam-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(11, 17, 32, 0.75); backdrop-filter: blur(8px);">
+        <div class="card-panel max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-primary-heading flex items-center space-x-2">
+                    <i data-lucide="camera" class="w-4 h-4" style="color: var(--accent);"></i>
+                    <span>Webcam Waste Scanner</span>
+                </h3>
+                <button id="close-webcam-btn" class="text-muted-desc hover:text-primary-heading">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <!-- Video Viewport -->
+            <div class="relative bg-black rounded-lg overflow-hidden aspect-video border border-divider flex items-center justify-center">
+                <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                <canvas id="webcam-canvas" class="hidden"></canvas>
+            </div>
+            <!-- Modal Actions -->
+            <div class="flex items-center justify-between pt-1">
+                <button type="button" id="cancel-webcam-btn" class="btn-secondary-action px-3.5 py-1.5 text-xs font-semibold">
+                    Cancel
+                </button>
+                <button type="button" id="snap-webcam-btn" class="btn-primary-action px-4 py-1.5 text-xs font-semibold flex items-center space-x-1.5 shadow-sm">
+                    <i data-lucide="aperture" class="w-3.5 h-3.5"></i>
+                    <span>Capture &amp; Analyze</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-divider py-3.5 mt-auto" style="background-color: var(--bg-card);">
+        <div class="app-container flex flex-col sm:flex-row items-center justify-between text-xs text-muted-desc gap-2">
+            <div>
+                <span class="font-semibold text-primary-heading">MEDIGRATOR</span>
+                <span class="mx-1.5">&bull;</span>
+                <span>AI-Driven Medical Waste Detection &amp; Intelligent Segregation</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span>CPCB / WHO Norms</span>
+                <span>MEDIGRATOR Detection System &bull; PyTorch YOLO11</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Scripts (Cache-Busted v7.0) -->
+    <script src="/static/js/app.js?v=7.0"></script>
+    <script>
+        // Mobile menu toggle helper
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu-dropdown');
+            if (menu) menu.classList.toggle('hidden');
+        }
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', toggleMobileMenu);
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+/* ==========================================================================
+   MEDIGRATOR: AI-Driven Medical Waste Detection & Intelligent Segregation
+   Professional Clinical / SaaS Design System & Precision Theming
+   ========================================================================== */
+
+:root {
+    /* ------------------------------------------------------------------------
+       Light Mode Design System
+       ------------------------------------------------------------------------ */
+    --bg-page: #F5F7FB;
+    --bg-header: rgba(255, 255, 255, 0.92);
+    --bg-card: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-secondary: #F1F5F9;
+    --bg-tertiary: #E8EEF5;
+    --border-color: #E2E8F0;
+    --border-subtle: #EDF2F7;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --accent: #0D9488;
+    --accent-hover: #0F766E;
+    --accent-surface: #F0FDFA;
+    --accent-border: #99F6E4;
+    --accent-text: #0D9488;
+    --card-radius: 12px;
+    --control-radius: 8px;
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+html.dark {
+    /* ------------------------------------------------------------------------
+       Dark Mode Design System (Deep Navy & Restrained Teal)
+       ------------------------------------------------------------------------ */
+    --bg-page: #0B1120;
+    --bg-header: rgba(17, 27, 46, 0.92);
+    --bg-card: #111B2E;
+    --bg-surface: #111B2E;
+    --bg-secondary: #162238;
+    --bg-tertiary: #1D2B44;
+    --border-color: #263449;
+    --border-subtle: #1E2D4A;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --accent: #14B8A6;
+    --accent-hover: #2DD4BF;
+    --accent-surface: rgba(20, 184, 166, 0.10);
+    --accent-border: rgba(20, 184, 166, 0.28);
+    --accent-text: #2DD4BF;
+    --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.28);
+    --shadow-dropdown: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+}
+
+/* Base resets & typography */
+html, body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Subtle 1px borders everywhere */
+*, *::before, *::after {
+    border-color: var(--border-color);
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ==========================================================================
+   Wider Dashboard Layout & Proportional Margins (1550–1600px Max-Width)
+   ========================================================================== */
+.app-container {
+    width: 100%;
+    max-width: 1580px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem; /* 16px on mobile */
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .app-container {
+        padding-left: 1.5rem; /* 24px on tablet */
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .app-container {
+        padding-left: 2rem; /* 32px on desktop */
+        padding-right: 2rem;
+    }
+}
+
+/* Workspace Two-Column Grid: 40% Left / 60% Right with 24px gap */
+.workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem; /* 20px on mobile */
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .workspace-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); /* Exactly 40% and 60% */
+        gap: 1.5rem; /* 24px on desktop */
+    }
+}
+
+/* Component: Cards & Panels with exact 1px border */
+.card-panel {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Component: Inner secondary containers */
+.inner-box {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--control-radius);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Semantic text colors */
+.text-primary-heading {
+    color: var(--text-primary);
+}
+.text-secondary-label {
+    color: var(--text-secondary);
+}
+.text-muted-desc {
+    color: var(--text-muted);
+}
+.border-divider {
+    border-color: var(--border-color);
+}
+
+/* Top Navigation Bar */
+.top-navbar {
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Navigation tabs */
+.nav-tab {
+    color: var(--text-secondary);
+    border-radius: var(--control-radius);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid transparent;
+}
+.nav-tab:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+}
+.nav-tab.active {
+    color: var(--accent-text);
+    background-color: var(--accent-surface);
+    border-color: var(--accent-border);
+    font-weight: 600;
+}
+
+/* Compact Light/Dark Mode Sliding Toggle */
+.theme-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    padding: 0.25rem 0.625rem;
+}
+
+.theme-toggle-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 62px;
+    text-align: right;
+    user-select: none;
+}
+
+.theme-toggle-track {
+    width: 2.625rem; /* 42px */
+    height: 1.375rem; /* 22px */
+    border-radius: 9999px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    background-color: #cbd5e1; /* Default light track */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+html.dark .theme-toggle-track {
+    background-color: var(--accent); /* Dark mode active track */
+    border-color: transparent;
+}
+
+.theme-toggle-knob {
+    width: 1.125rem; /* 18px */
+    height: 1.125rem; /* 18px */
+    border-radius: 9999px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0); /* Left = Light mode */
+}
+
+html.dark .theme-toggle-knob {
+    transform: translateX(1.25rem); /* Right = Dark mode (20px) */
+    background-color: #ffffff;
+}
+
+/* System Status Badge */
+.system-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* Drag & Drop Area: Subtle 1px dashed outline */
+.drop-zone-box {
+    border: 1px dashed var(--border-color);
+    background-color: var(--bg-secondary);
+    border-radius: var(--control-radius);
+    transition: all 0.2s ease;
+}
+.drop-zone-box:hover, .drop-zone-box.drag-over {
+    border-color: var(--accent);
+    background-color: var(--accent-surface);
+}
+
+/* Quick Test Sample Thumbnails */
+.sample-thumb-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--control-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.sample-thumb-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Precision Sliders */
+.slider-control {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--border-color);
+    outline: none;
+    transition: background 0.15s ease;
+}
+.slider-control::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+.slider-control::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+.slider-control::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s ease;
+}
+
+/* Action Buttons */
+.btn-primary-action {
+    background-color: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: var(--control-radius);
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+.btn-primary-action:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+.btn-primary-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btn-secondary-action {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 500;
+    border-radius: var(--control-radius);
+    transition: all 0.15s ease;
+}
+.btn-secondary-action:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--text-muted);
+}
+
+/* Detection Items & Table Rows */
+.detection-item-row {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--control-radius);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.detection-item-row:hover {
+    background-color: var(--bg-secondary);
+}
+
+/* Segregation Rule Cards (Tab 2) - Clean 1px border with subtle 3px left indicator */
+.bin-rule-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left-width: 3px;
+    border-radius: var(--card-radius);
+    transition: all 0.15s ease;
+}
+.bin-rule-card:hover {
+    box-shadow: var(--shadow-card);
+    transform: translateY(-1px);
+}
+
+/* Focus outline for accessibility */
+button:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

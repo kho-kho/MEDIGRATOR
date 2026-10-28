@@ -11,6 +11,10 @@ torchvision>=0.15.0
 opencv-python>=4.8.0
 pillow>=10.0.0
 
+# Web Application Framework
+flask>=3.0.0
+werkzeug>=3.0.0
+
 # Plotting & Utilities
 pyyaml>=6.0
 matplotlib>=3.7.0

@@ -1,6 +1,6 @@
 """
-Biomedical Waste Detection - Model Inference Script
-Project: Computer Vision-Based Biomedical Waste Detection and Intelligent Segregation
+MEDIGRATOR: AI-Driven Medical Waste Detection & Intelligent Segregation
+Inference & Waste Segregation CLI Script
 
 Supports:
     - Single image:    python src/predict.py --source path/to/image.jpg
@@ -21,7 +21,7 @@ from ultralytics import YOLO
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Run inference with trained Biomedical Waste YOLO model"
+        description="Run inference with trained MEDIGRATOR YOLO model"
     )
     parser.add_argument(
         "--weights",
@@ -128,7 +128,7 @@ def main():
     source = int(args.source) if args.source.isdigit() else args.source
 
     print("=" * 70)
-    print("BIOMEDICAL WASTE DETECTION - INFERENCE")
+    print("MEDIGRATOR: AI-DRIVEN MEDICAL WASTE DETECTION & SEGREGATION")
     print("=" * 70)
     print(f"Weights Path : {weights_path}")
     print(f"Source       : {source}")

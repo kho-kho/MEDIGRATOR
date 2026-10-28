@@ -36,9 +36,14 @@ dataset/test/
 
 # IDE & OS specific files
 .vscode/*
+!.vscode/MEDIGRATOR
 !.vscode/BiomedicalWasteAI
 .idea/
 *.swp
 *.swo
 .DS_Store
 Thumbs.db
+.venv/
+__pycache__/
+*.pyc
+.env

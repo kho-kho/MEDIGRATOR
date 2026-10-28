@@ -7,7 +7,7 @@ import torch
 
 def verify_environment():
     print("=" * 60)
-    print("PyTorch Environment & Hardware Verification")
+    print("MEDIGRATOR - PyTorch & Hardware Diagnostic Verification")
     print("=" * 60)
     print(f"Python Version       : {sys.version.split()[0]}")
     print(f"PyTorch Version      : {torch.__version__}")

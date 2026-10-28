@@ -1,6 +1,6 @@
-# Computer Vision-Based Biomedical Waste Detection and Intelligent Segregation for Autonomous Waste Management
+# MEDIGRATOR: AI-Driven Medical Waste Detection & Intelligent Segregation
 
-An academic Computer Vision mini-project engineered to identify, localize, and classify biomedical waste into standardized disposal categories using state-of-the-art object detection (Ultralytics YOLO11).
+An academic Computer Vision system engineered to identify, localize, and classify medical waste into standardized disposal categories using state-of-the-art object detection (Ultralytics YOLO11) and automated WHO/CPCB segregation protocols.
 
 > **Project Scope:** This is a software and computer vision research project. Physical robotic sorting hardware is outside the current scope. All training and inference are designed for flexible, reproducible execution across local workstations and GPU compute machines.
 
@@ -8,26 +8,34 @@ An academic Computer Vision mini-project engineered to identify, localize, and c
 
 ## 1. Project Overview & Architecture
 
-Proper segregation of biomedical waste is critical in hospital environments to prevent nosocomial infections, chemical contamination, and injuries from medical sharps. This project trains a custom object detector on 14 distinct biomedical waste categories to enable automated waste categorization.
+Proper segregation of biomedical waste is critical in hospital environments to prevent nosocomial infections, chemical contamination, and injuries from medical sharps. **MEDIGRATOR** combines deep learning object detection with regulatory waste management rules to automatically classify 14 distinct clinical waste items and advise staff on correct color-coded bin disposal.
 
 ### Project Directory Structure
 ```text
-BiomedicalWasteAI/
+MEDIGRATOR/
 ├── dataset/
 │   ├── data.yaml            # YOLO dataset configuration & class names
-│   ├── train/               # (Excluded from Git) 4,569 images & YOLO labels
-│   ├── valid/               # (Excluded from Git) 463 images & YOLO labels
-│   └── test/                # (Excluded from Git) 287 images & YOLO labels
-├── src/
-│   ├── train.py             # Configurable YOLO training pipeline
-│   └── predict.py           # Multi-source inference script (image/video/webcam)
+│   ├── README.dataset.txt   # Dataset source reference
+│   └── README.roboflow.txt  # Dataset export specifications
+├── models/
+│   ├── best.pt              # Trained YOLO11n detection weights (5.48 MB)
+│   └── README.md            # Guidelines for storing trained model weights
 ├── scripts/
 │   └── verify_gpu.py        # CUDA & GPU hardware diagnostic script
-├── models/
-│   └── README.md            # Guidelines for storing trained model weights (best.pt)
-├── runs/                    # (Excluded from Git) Training & inference output artifacts
+├── src/
+│   ├── train.py             # Configurable YOLO training pipeline
+│   ├── predict.py           # Multi-source inference CLI (image/video/webcam)
+│   ├── inference.py         # Real-time inference engine for web application
+│   └── segregation_rules.py # CPCB & WHO biomedical waste segregation knowledge base
+├── static/
+│   ├── css/style.css        # Dashboard styling & glassmorphism accents
+│   ├── js/app.js            # Frontend application logic & webcam handling
+│   └── samples/             # Bundled demo images for one-click testing
+├── templates/
+│   └── index.html           # Modern, responsive MEDIGRATOR web dashboard
+├── app.py                   # Flask web server and REST API
 ├── requirements.txt         # Core project dependencies
-├── .gitignore               # Excludes large binaries, weights, venv, and dataset images
+├── .gitignore               # Excludes large binaries, weights, venv, and datasets
 └── README.md                # Project documentation
 ```
 
@@ -44,23 +52,23 @@ The dataset is sourced from **Roboflow Universe**:
   - **Validation split:** 463 images
   - **Test split:** 287 images
 
-### 14 Biomedical Waste Classes
-| Class ID | Class Name | Description / Typical Waste Category |
-|:---:|:---|:---|
-| `0` | `fluid bottle` | Saline, IV fluid containers, chemical bottles |
-| `1` | `gauze` | Clean / general surgical cotton gauze |
-| `2` | `glass` | Ampoules, glass vials, medicine bottles |
-| `3` | `glove` | Examination gloves (latex / nitrile) |
-| `4` | `mask` | Surgical / N95 disposable masks |
-| `5` | `needle` | Hypodermic injection needles (sharps) |
-| `6` | `needle cap` | Plastic protective caps for needles |
-| `7` | `paper` | Medical wrappers, prescription pads, towel sheets |
-| `8` | `plastic` | Generic non-bottle medical plastic containers |
-| `9` | `scrub` | Medical scrubs, fabric caps, gowns |
-| `10` | `test tube` | Blood collection tubes (Vacutainers, etc.) |
-| `11` | `tube` | IV lines, catheter tubing, infusion tubes |
-| `12` | `unused gauze` | Sealed / pristine gauze packs |
-| `13` | `used syringe` | Syringe barrels with plunger assembly |
+### 14 Clinical Waste Target Classes
+| Class ID | Class Name | Description / Clinical Waste Category | Assigned Disposal Bin |
+|:---:|:---|:---|:---|
+| `0` | `fluid bottle` | Saline, IV fluid containers, chemical bottles | 🔴 Red Bin (Recyclable Plastic) |
+| `1` | `gauze` | Clean / general surgical cotton gauze | 🟡 Yellow Bin (Soiled / Infectious) |
+| `2` | `glass` | Ampoules, glass vials, medicine bottles | 🔵 Blue Box (Glassware) |
+| `3` | `glove` | Examination gloves (latex / nitrile) | 🔴 Red Bin (Contaminated Plastic) |
+| `4` | `mask` | Surgical / N95 disposable masks | 🟡 Yellow Bin (Infectious PPE) |
+| `5` | `needle` | Hypodermic injection needles (sharps) | ⚪ White Box (Puncture-Proof Sharps) |
+| `6` | `needle cap` | Plastic protective caps for needles | 🔴 Red Bin (Recyclable Plastic) |
+| `7` | `paper` | Medical wrappers, prescription pads, towel sheets | ⚫ Black/Green (General Municipal) |
+| `8` | `plastic` | Generic non-bottle medical plastic containers | 🔴 Red Bin (Recyclable Plastic) |
+| `9` | `scrub` | Medical scrubs, fabric caps, gowns | 🟡 Yellow Bin (Soiled Linen) |
+| `10` | `test tube` | Blood collection tubes (Vacutainers, etc.) | 🔵 Blue Box (Glass) / 🟡 Yellow |
+| `11` | `tube` | IV lines, catheter tubing, infusion tubes | 🔴 Red Bin (Contaminated Plastic) |
+| `12` | `unused gauze` | Sealed / pristine gauze packs | ⚫ Black/Green (General Non-Hazardous) |
+| `13` | `used syringe` | Syringe barrels with plunger assembly | ⚪ White Box (Sharps) / 🔴 Red Bin |
 
 ### Class Distribution & Known Imbalance
 Object instance counts across the dataset:
@@ -87,29 +95,30 @@ Object instance counts across the dataset:
 
 ## 3. Software Stack & Environment
 
-- **OS:** Windows / Linux
-- **Python:** 3.10+ / 3.11.x
+- **OS:** Windows / Linux / macOS
+- **Python:** 3.10+ / 3.11.x / 3.13.x
 - **Deep Learning Framework:** PyTorch (>=2.0.0) with CUDA acceleration
-- **Object Detection Model:** Ultralytics YOLO11 (YOLO11n lightweight baseline)
+- **Object Detection Architecture:** Ultralytics YOLO11 (YOLO11n lightweight baseline)
+- **Web Application Framework:** Flask 3.x
+- **Frontend Stack:** HTML5, Tailwind CSS, Lucide Icons, Vanilla JavaScript
 - **Computer Vision Utilities:** OpenCV, Pillow, Matplotlib, PyYAML
 
 ---
 
-## 4. Setup Guide for GPU Machines
+## 4. Setup Guide for Local & GPU Execution
 
-Follow these steps when cloning this repository onto a computer equipped with an NVIDIA GPU.
+Follow these steps when setting up the project locally:
 
-### Step 1: Clone the Repository
+### Step 1: Navigate to Repository
 ```bash
-git clone <repository_url>
-cd BiomedicalWasteAI
+cd BiomedicalwasteAI
 ```
 
 ### Step 2: Create and Activate Virtual Environment
-**On Windows:**
+**On Windows (PowerShell):**
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 **On Linux / macOS:**
 ```bash
@@ -118,65 +127,45 @@ source .venv/bin/activate
 ```
 
 ### Step 3: Install CUDA-Enabled PyTorch & Dependencies
-To ensure your NVIDIA GPU is utilized, install the matching PyTorch CUDA build first, followed by the remaining dependencies:
-
-**For CUDA 12.1 / 12.4 (most modern NVIDIA GPUs):**
+To ensure an NVIDIA GPU is utilized:
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 pip install -r requirements.txt
 ```
-*(If the machine uses CUDA 11.8, replace `cu121` with `cu118`)*.
+*(If testing on CPU only, simply run `pip install -r requirements.txt`).*
 
-### Step 4: Verify GPU Availability
-Run either the quick verification command:
-```bash
-python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
-```
-Or run the built-in diagnostic script:
+### Step 4: Verify Hardware Diagnostics
+Run the diagnostic script:
 ```bash
 python scripts/verify_gpu.py
 ```
 Expected output:
 ```text
-CUDA Available       : True
-Device Count         : 1
-  [GPU 0] NVIDIA GeForce RTX ... (X.XX GB VRAM)
-SUCCESS: GPU is ready for YOLO training.
+============================================================
+MEDIGRATOR - PyTorch & Hardware Diagnostic Verification
+============================================================
+Python Version       : 3.x.x
+PyTorch Version      : 2.x.x
+CUDA Available       : True (or False for CPU)
+============================================================
 ```
-
-### Step 5: Place Dataset
-Because the 5,319 images are excluded from Git to prevent repository bloat, place the downloaded Roboflow dataset into `dataset/` so the directory mirrors:
-```text
-dataset/
-├── data.yaml
-├── train/
-│   ├── images/
-│   └── labels/
-├── valid/
-│   ├── images/
-│   └── labels/
-└── test/
-    ├── images/
-    └── labels/
-```
-*(The `dataset/data.yaml` is pre-configured and already included in this repository).*
 
 ---
 
-## 5. Model Training
+## 5. Model Training Pipeline
 
-We use **YOLO11n** (`yolo11n.pt`) as our baseline model. It offers fast training speeds, low VRAM footprint, and high accuracy for embedded/edge deployment.
+We use **YOLO11n** (`yolo11n.pt`) as our baseline detection architecture. It offers fast inference speeds, low VRAM footprint, and high accuracy for embedded/edge deployment.
 
 ### Run Training with Sensible Defaults
 ```bash
 python src/train.py
 ```
-This automatically selects GPU `0`, runs 50 epochs, batch size 16, and input resolution 640x640.
+This automatically selects GPU `0` (or CPU fallback), runs 50 epochs, batch size 8, and input resolution 640x640.
 
 ### Configurable Training Options
 You can customize hyperparameters via command-line arguments:
 ```bash
-python src/train.py --epochs 100 --batch 32 --imgsz 640 --device 0 --workers 4
+python src/train.py --epochs 100 --batch 16 --imgsz 640 --device 0 --workers 4
 ```
 
 | Parameter | Default | Description |
@@ -184,49 +173,27 @@ python src/train.py --epochs 100 --batch 32 --imgsz 640 --device 0 --workers 4
 | `--model` | `yolo11n.pt` | Pretrained YOLO checkpoint |
 | `--data` | `dataset/data.yaml` | Path to dataset configuration |
 | `--epochs` | `50` | Total training epochs (with early stopping patience 15) |
-| `--batch` | `16` | Batch size (reduce to `8` if VRAM < 6GB; increase to `32` if VRAM >= 12GB) |
+| `--batch` | `8` | Batch size (reduce to `4` if VRAM < 4GB; increase to `16` or `32` if VRAM >= 12GB) |
 | `--imgsz` | `640` | Input image size |
 | `--device` | `None` (auto) | `0` for GPU 0, `0,1` for multi-GPU, or `cpu` |
-| `--workers` | `4` | DataLoader threads (`2` recommended if memory bottlenecks occur on Windows) |
+| `--workers` | `0` | DataLoader threads (`0` recommended on Windows) |
 | `--project` | `runs/detect` | Base output directory |
 | `--name` | `biomedical_waste_baseline` | Experiment run name |
 
-### Training Outputs & Best Model
-Training logs, loss curves, confusion matrices, and model weights are automatically stored under:
-```text
-runs/detect/biomedical_waste_baseline/
-├── weights/
-│   ├── best.pt    # Best checkpoint based on validation mAP50-95
-│   └── last.pt    # Final epoch checkpoint
-├── results.png    # Training loss & metric curves
-└── confusion_matrix.png
-```
-
-To preserve the best checkpoint for inference:
-```bash
-# Windows
-copy runs\detect\biomedical_waste_baseline\weights\best.pt models\best.pt
-
-# Linux
-cp runs/detect/biomedical_waste_baseline/weights/best.pt models/best.pt
-```
-
 ---
 
-## 6. Model Inference & Testing
+## 6. Model Inference & Testing (CLI)
 
-The inference script `src/predict.py` loads the trained weights (`models/best.pt` or fallback in `runs/detect/`) and detects waste items.
-
-> ℹ️ **Webcam Note:** A webcam is **NOT** required for training or evaluation. The pipeline primarily operates on test images and prerecorded videos. Webcam streaming is purely an optional feature for live demonstrations.
-
-### Inference on Test Images (Batch)
-```bash
-python src/predict.py --weights models/best.pt --source dataset/test/images
-```
+The CLI inference script `src/predict.py` loads the trained weights (`models/best.pt`) and detects waste items.
 
 ### Inference on a Single Image
 ```bash
 python src/predict.py --weights models/best.pt --source path/to/sample.jpg
+```
+
+### Inference on Test Images (Batch)
+```bash
+python src/predict.py --weights models/best.pt --source dataset/test/images
 ```
 
 ### Inference on a Video File
@@ -239,14 +206,46 @@ python src/predict.py --weights models/best.pt --source path/to/waste_video.mp4
 python src/predict.py --weights models/best.pt --source 0 --show
 ```
 
-Annotated visual outputs with predicted bounding boxes and class labels are saved to:
+---
+
+## 7. MEDIGRATOR Interactive Web UI & Segregation Dashboard
+
+A modern, responsive web application for real-time medical waste inference and clinical segregation guidance.
+
+### Dashboard Capabilities
+- **Exact Project Presentation:** Official **MEDIGRATOR: AI-Driven Medical Waste Detection & Intelligent Segregation** interface featuring the **MEDIGRATOR Detection Studio**.
+- **Clinical / SaaS Design System:** Refined dark navy palette (`#0B1120`, `#111B2E`) with restrained teal accents (`#14B8A6`) and crisp light mode (`#F5F7FB`, `#FFFFFF`). Engineered with subtle ~1px borders (`#263449` in dark, `#E2E8F0` in light), clean typography, and balanced spacing suitable for formal academic and clinical evaluations.
+- **Compact Light/Dark Mode Switcher:** Accessible, sliding theme toggle located directly in the top navigation bar. Defaults to dark mode on fresh load with smooth transitions and high contrast across all elements.
+- **Visual Detection Studio:** Real-time object detection with bounding box localization, confidence percentages, and detection latency metrics.
+- **Detection Settings:** Configurable confidence thresholds and IoU overlap sliders in real time.
+- **Detection Results:** Visual side-by-side view toggle (annotated vs. original photo) and summary KPIs.
+- **Dynamic Segregation Advisory:** Direct mapping of predicted items to official WHO and CPCB color-coded disposal streams:
+  - 🟡 **Yellow:** Soiled & infectious waste (incineration / autoclaving)
+  - 🔴 **Red:** Contaminated recyclable plastics (autoclaving & shredding)
+  - ⚪ **White:** Puncture-proof container for sharps and needles
+  - 🔵 **Blue:** Glass ampoules and medicine vials (chemical disinfection & recycling)
+  - ⚫ **Black/Green:** General non-hazardous municipal waste
+- **Multiple Input Modes:** Drag-and-drop file upload, live browser webcam capture, and bundled one-click demo samples (`static/samples/`).
+- **Technology & Dataset Reference:** Technical specifications, 14-class regulatory directory, and clinical handling checklists for academic evaluation.
+
+### Running the Web Application Locally
+
+```bash
+# 1. Activate virtual environment
+.\.venv\Scripts\Activate.ps1
+
+# 2. Launch the MEDIGRATOR application
+python app.py
+```
+
+Open your browser and navigate to:
 ```text
-runs/predict/exp/
+http://127.0.0.1:5000
 ```
 
 ---
 
-## 7. Next Steps & Roadmap
-1. **GPU Training:** Run `python src/train.py` on the GPU workstation and log final mAP@50 and mAP@50-95.
-2. **Evaluation:** Analyze the confusion matrix and evaluate performance across minority classes (`glass`, `scrub`).
-3. **Application Layer:** Build an interactive GUI / dashboard for uploading waste images/videos and viewing segregated category recommendations (General, Sharps, Infectious, Recyclable).
+## 8. Next Steps & Roadmap
+1. **GPU Training:** Continue fine-tuning YOLO11 on expanded high-resolution clinical datasets.
+2. **Evaluation:** Analyze confusion matrices and augment minority classes (`glass`, `scrub`).
+3. **Hardware Deployment:** Interface the MEDIGRATOR API with conveyor sorting systems and smart IoT-enabled hospital waste bins.

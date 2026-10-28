@@ -1,6 +1,6 @@
 """
-Biomedical Waste Detection - Model Training Script
-Project: Computer Vision-Based Biomedical Waste Detection and Intelligent Segregation
+MEDIGRATOR: AI-Driven Medical Waste Detection & Intelligent Segregation
+Model Training Pipeline
 Model: Ultralytics YOLO11n (Baseline)
 
 Usage (Default GPU/Auto):
@@ -19,7 +19,7 @@ from ultralytics import YOLO
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Train YOLO model on Biomedical Waste Dataset"
+        description="Train YOLO model for MEDIGRATOR Medical Waste Detection"
     )
     # Model architecture / weights
     parser.add_argument(
@@ -121,7 +121,7 @@ def main():
     data_path = (project_root / args.data).resolve()
 
     print("=" * 70)
-    print("BIOMEDICAL WASTE DETECTION - MODEL TRAINING")
+    print("MEDIGRATOR - MODEL TRAINING PIPELINE")
     print("=" * 70)
 
     # Verify dataset YAML configuration
