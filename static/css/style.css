@@ -121,7 +121,7 @@ html, body {
 
 @media (min-width: 1024px) {
     .workspace-grid {
-        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); /* Exactly 40% and 60% */
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); /* 40% / 60% ratio */
         gap: 1.5rem; /* 24px on desktop */
     }
 }
@@ -218,7 +218,7 @@ html, body {
     align-items: center;
     padding: 2px;
     cursor: pointer;
-    background-color: #cbd5e1; /* Default light track */
+    background-color: #cbd5e1; /* Light track */
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -259,6 +259,25 @@ html.dark .theme-toggle-knob {
     color: var(--text-secondary);
 }
 
+/* Input Type Tabs (Image vs Video) */
+.input-mode-tab {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--control-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+}
+.input-mode-tab.active {
+    background-color: var(--accent-surface);
+    color: var(--accent-text);
+    border-color: var(--accent-border);
+}
+
 /* Drag & Drop Area: Subtle 1px dashed outline */
 .drop-zone-box {
     border: 1px dashed var(--border-color);
@@ -284,6 +303,10 @@ html.dark .theme-toggle-knob {
     border-color: var(--accent);
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.sample-thumb-card.active-sample {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /* Custom Precision Sliders */
@@ -375,6 +398,51 @@ html.dark .theme-toggle-knob {
 .bin-rule-card:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-1px);
+}
+
+/* Clinical Segregation Table */
+.table-clinical {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.75rem;
+}
+.table-clinical th {
+    padding: 0.625rem 0.75rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+}
+.table-clinical td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.table-clinical tr:last-child td {
+    border-bottom: none;
+}
+.table-clinical tr:hover td {
+    background-color: var(--bg-secondary);
+}
+
+/* Keyframe Cards for Video */
+.keyframe-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--control-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.keyframe-card:hover {
+    border-color: var(--accent);
+}
+.keyframe-card.active-keyframe {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /* Focus outline for accessibility */
